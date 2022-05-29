@@ -5,6 +5,8 @@ from nltk.tokenize import PunktSentenceTokenizer
 from textblob.sentiments import NaiveBayesAnalyzer
 from textblob import WordList
 from textblob import Word
+from googletrans import Translator, constants
+from pprint import pprint
 
 token = '5480699275:AAGv9QZXnyLafpiWehCkepcDNwC7W3wL46A'
 bot = telebot.TeleBot('%s' % token)
@@ -13,9 +15,15 @@ bot = telebot.TeleBot('%s' % token)
 @bot.message_handler(content_types=['text', 'document', 'audio'])
 def get_text_messages(message):
     blob = TextBlob(message.text, analyzer=NaiveBayesAnalyzer())
+    translator = Translator()
+    translation = translator.translate(message.text)
+    analysis = TextBlob(translation.text).sentiment
     bot.send_message(message.from_user.id,
                      'Список предложений:\n' +
                      '\n'.join(s.string for s in blob.sentences))
+    #оценка
+    bot.send_message(message.from_user.id, 
+                    "эмоциональная оценка: " + str(analysis))
     # Токенизация
     bot.send_message(message.from_user.id,
                      'Токенизация:\n' + ', '.join(blob.words))
@@ -29,6 +37,7 @@ def get_text_messages(message):
     #
     bot.send_message(message.from_user.id,
                      'Лемитизация:\n' + ', '.join(WordList(words).lemmatize()))
+
     if blob.sentiment[0] == 'pos':
         bot.send_message(message.from_user.id, '\U0001F63A')
     else:

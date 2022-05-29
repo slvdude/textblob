@@ -7,7 +7,7 @@ string = str(input('Введите строку для перевода и эм�
 translator = Translator()
 translation = translator.translate(string)
 print(translation.text)
-analysis = TextBlob(translation.text).sentiment()
+analysis = TextBlob(translation.text).sentiment
 print('----------------------------------')
 print('Эмоциональная оценка : ')
 print(analysis)
